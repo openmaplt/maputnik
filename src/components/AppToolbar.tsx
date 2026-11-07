@@ -11,7 +11,9 @@ import {
   MdLanguage,
   MdSave,
   MdPublic,
-  MdCode
+  MdCode,
+  MdArrowBack,
+  MdCloudUpload
 } from "react-icons/md";
 import pkgJson from "../../package.json";
 //@ts-ignore
@@ -19,6 +21,7 @@ import maputnikLogo from "maputnik-design/logos/logo-color.svg?inline";
 import { withTranslation, type WithTranslation } from "react-i18next";
 import { supportedLanguages } from "../i18n";
 import type { OnStyleChangedCallback } from "../libs/definitions";
+import type { OpenmapUiState } from "../libs/openmap";
 
 // This is required because of <https://stackoverflow.com/a/49846426>, there isn't another way to detect support that I'm aware of.
 const browser = detect();
@@ -106,6 +109,9 @@ type AppToolbarInternalProps = {
   onSetMapState(mapState: MapState): unknown
   mapState?: MapState
   renderer?: string
+  // Set when the editor was opened from openmap.lt (fork-only).
+  openmap?: OpenmapUiState | null
+  onSaveOpenmap?(): void
 } & WithTranslation;
 
 class AppToolbarInternal extends React.Component<AppToolbarInternalProps> {
@@ -180,6 +186,7 @@ class AppToolbarInternal extends React.Component<AppToolbarInternalProps> {
     const currentView = views.find((view) => {
       return view.id === this.props.mapState;
     });
+    const openmap = this.props.openmap;
 
     return <nav className='maputnik-toolbar'>
       <div className="maputnik-toolbar__inner">
@@ -222,6 +229,33 @@ class AppToolbarInternal extends React.Component<AppToolbarInternalProps> {
           </a>
         </div>
         <div className="maputnik-toolbar__actions" role="navigation" aria-label="Toolbar">
+          {openmap && <>
+            {openmap.session.returnUrl && (
+              <a
+                className="maputnik-toolbar-link"
+                href={openmap.session.returnUrl}
+                data-wd-key="nav:openmap-back"
+              >
+                <MdArrowBack />
+                <IconText>openmap.lt</IconText>
+              </a>
+            )}
+            <button
+              className={classnames("maputnik-toolbar-action", {"maputnik-toolbar-action--attention": openmap.dirty})}
+              data-wd-key="nav:openmap-save"
+              disabled={openmap.status === "saving" || !!openmap.loadError}
+              onClick={() => this.props.onSaveOpenmap?.()}
+              title="Išsaugoti openmap.lt (Ctrl+S)"
+            >
+              <MdCloudUpload />
+              <IconText>{openmap.status === "saving" ? "Saugoma…" : "Išsaugoti"}</IconText>
+            </button>
+            <span className="maputnik-toolbar-status" role="status" data-wd-key="nav:openmap-status">
+              {openmap.loadError ? "Stilius neužkrautas"
+                : openmap.dirty ? "Yra neišsaugotų pakeitimų"
+                  : openmap.status === "saved" ? "Išsaugota" : ""}
+            </span>
+          </>}
           <ToolbarAction wdKey="nav:open" onClick={() => this.props.onToggleModal("open")}>
             <MdOpenInBrowser />
             <IconText>{t("Open")}</IconText>

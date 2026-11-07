@@ -17,6 +17,7 @@ import { CodeEditor } from "./CodeEditor";
 import { LayerList } from "./LayerList";
 import { LayerEditor } from "./LayerEditor";
 import { AppToolbar, type MapState } from "./AppToolbar";
+import { OpenmapNotice } from "./OpenmapNotice";
 import { AppLayout } from "./AppLayout";
 import { AppMessagePanel as MessagePanel } from "./AppMessagePanel";
 
@@ -33,6 +34,7 @@ import { emptyStyle, getAccessToken, replaceAccessTokens } from "../libs/style";
 import { undoMessages, redoMessages } from "../libs/diffmessage";
 import { createStyleStore, type IStyleStore } from "../libs/store/style-store-factory";
 import { RevisionStore } from "../libs/revisions";
+import { saveOpenmapStyle, type OpenmapUiState } from "../libs/openmap";
 import { LayerWatcher } from "../libs/layerwatcher";
 import tokens from "../config/tokens.json";
 import isEqual from "lodash.isequal";
@@ -137,6 +139,8 @@ type AppState = {
     codeEditor: boolean
   }
   fileHandle: FileSystemFileHandle | null
+  // Set when the editor was opened from openmap.lt (fork-only).
+  openmap: OpenmapUiState | null
 };
 
 export class App extends React.Component<any, AppState> {
@@ -187,6 +191,7 @@ export class App extends React.Component<any, AppState> {
         debugToolbox: false,
       },
       fileHandle: null,
+      openmap: null,
     };
 
     this.layerWatcher = new LayerWatcher({
@@ -259,6 +264,10 @@ export class App extends React.Component<any, AppState> {
         (e.target as HTMLElement).blur();
         document.body.focus();
       }
+      else if(e.ctrlKey || e.metaKey) {
+        // Ctrl/Cmd combinations (e.g. Ctrl+S = save) are not single-key shortcuts.
+        return;
+      }
       else if(this.state.isOpen.shortcuts || !isTextEntryElement(document.activeElement)) {
         const shortcut = shortcuts.find((shortcut) => {
           return (shortcut.key === e.key);
@@ -273,6 +282,13 @@ export class App extends React.Component<any, AppState> {
   };
 
   handleKeyPress = (e: KeyboardEvent) => {
+    // Ctrl/Cmd+S saves to openmap.lt when the editor was opened from there
+    // (otherwise the browser's own "save page" is left alone).
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s" && this.state.openmap) {
+      e.preventDefault();
+      this.saveToOpenmap();
+      return;
+    }
     if(navigator.platform.toUpperCase().indexOf("MAC") >= 0) {
       if(e.metaKey && e.shiftKey && e.keyCode === 90) {
         e.preventDefault();
@@ -295,13 +311,56 @@ export class App extends React.Component<any, AppState> {
     }
   };
 
+  // Leaving with edits that were not saved to openmap.lt loses them: ask first.
+  handleBeforeUnload = (e: BeforeUnloadEvent) => {
+    if (this.state.openmap?.dirty) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  };
+
+  // An edit made by the user (not the initial load) leaves the profile unsaved.
+  markOpenmapDirty() {
+    this.setState((state) => state.openmap
+      ? { openmap: { ...state.openmap, dirty: true, status: "idle", error: null } }
+      : null);
+  }
+
+  saveToOpenmap = async () => {
+    const openmap = this.state.openmap;
+    if (!openmap || openmap.loadError || openmap.status === "saving") {
+      return;
+    }
+    const snapshot = this.state.mapStyle;
+    this.setState({ openmap: { ...openmap, status: "saving", error: null } });
+    const result = await saveOpenmapStyle(openmap.session, snapshot);
+    this.setState((state) => {
+      if (!state.openmap) {
+        return null;
+      }
+      if (!result.ok) {
+        return { openmap: { ...state.openmap, status: "error", error: result } };
+      }
+      // Edits made while the request was in flight are still unsaved.
+      const unchanged = state.mapStyle === snapshot;
+      return { openmap: { ...state.openmap, status: "saved", error: null, dirty: !unchanged } };
+    });
+  };
+
   async componentDidMount() {
-    this.styleStore = await createStyleStore((mapStyle, opts) => this.onStyleChanged(mapStyle, opts));
+    this.styleStore = await createStyleStore(
+      (mapStyle, opts) => this.onStyleChanged(mapStyle, opts),
+      ({ session, loadError }) => this.setState({
+        openmap: { session, loadError, status: "idle", error: null, dirty: false },
+      }),
+    );
     window.addEventListener("keydown", this.handleKeyPress);
+    window.addEventListener("beforeunload", this.handleBeforeUnload);
   }
 
   componentWillUnmount() {
     window.removeEventListener("keydown", this.handleKeyPress);
+    window.removeEventListener("beforeunload", this.handleBeforeUnload);
   }
 
   saveStyle(snapshotStyle: StyleSpecificationWithId) {
@@ -490,6 +549,7 @@ export class App extends React.Component<any, AppState> {
     }
     if (opts.save) {
       this.saveStyle(newStyle);
+      this.markOpenmapDirty();
     }
 
     const zoom = newStyle?.zoom;
@@ -898,6 +958,8 @@ export class App extends React.Component<any, AppState> {
       onStyleOpen={this.onStyleChanged}
       onSetMapState={this.setMapState}
       onToggleModal={(modal: keyof AppState["isOpen"]) => this.toggleModal(modal)}
+      openmap={this.state.openmap}
+      onSaveOpenmap={this.saveToOpenmap}
     />;
 
     const codeEditor = this.state.isOpen.codeEditor ? <CodeEditor
@@ -995,6 +1057,7 @@ export class App extends React.Component<any, AppState> {
         isOpen={this.state.isOpen.globalState}
         onOpenToggle={() => this.toggleModal("globalState")}
       />
+      <OpenmapNotice openmap={this.state.openmap} />
     </div>;
 
     return <AppLayout

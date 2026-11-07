@@ -17,7 +17,9 @@ export default defineConfig(({ mode }) => ({
     istanbul({
       requireEnv: false,
       nycrcPath: "./.nycrc.json",
-      forceBuildInstrument: true, // Instrument the source so e2e runs can collect coverage
+      // Instrument the source so e2e runs can collect coverage. The openmap.lt
+      // Docker image sets MAPUTNIK_INSTRUMENT=false: no coverage code in production.
+      forceBuildInstrument: process.env.MAPUTNIK_INSTRUMENT !== "false",
     }),
   ],
   optimizeDeps: {

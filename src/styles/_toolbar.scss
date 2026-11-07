@@ -155,3 +155,49 @@
     border-color: vars.$color-lowgray;
   }
 }
+
+// openmap.lt integration (fork-only)
+.maputnik-toolbar-action:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.maputnik-toolbar-action--attention {
+  font-weight: bold;
+  color: vars.$color-green;
+}
+
+.maputnik-toolbar-status {
+  color: vars.$color-lowgray;
+  font-size: vars.$font-size-6;
+  padding: 0 vars.$margin-3;
+}
+
+.maputnik-openmap-notice {
+  position: fixed;
+  top: vars.$toolbar-height + vars.$toolbar-offset + 8px;
+  right: vars.$margin-3;
+  z-index: 150;
+  max-width: 420px;
+  padding: vars.$margin-3 vars.$margin-4 vars.$margin-3 vars.$margin-3;
+  border-radius: 4px;
+  background-color: vars.$color-red;
+  color: vars.$color-white;
+  font-size: vars.$font-size-5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+
+  p {
+    margin: vars.$margin-1 0 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.maputnik-openmap-notice-close {
+  position: absolute;
+  top: vars.$margin-2;
+  right: vars.$margin-2;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
