@@ -1,7 +1,9 @@
 name: openmap.lt image
 
-# Builds the Docker image of the editor and pushes it to GitHub Container
-# Registry as ghcr.io/openmaplt/maputnik (latest = main).
+# Builds the Docker image of the editor, pushes it to GitHub Container Registry
+# as ghcr.io/openmaplt/maputnik (latest = main) and redeploys it on the server
+# over SSH, the same way openmap.lt itself is deployed (see openmap/README.md for
+# the secrets this needs).
 on:
   push:
     branches: [ main ]
@@ -46,3 +48,39 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    name: openmap/deploy
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          envs: COMMIT_SHA
+          script: |
+            set -e
+            mkdir -p ${{ secrets.EDITOR_DEPLOY_PATH || '/opt/openmap-editor' }}
+            cd ${{ secrets.EDITOR_DEPLOY_PATH || '/opt/openmap-editor' }}
+
+            echo "EDITOR_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" > .env
+            echo "EDITOR_PORT=${{ secrets.EDITOR_PORT || '3001' }}" >> .env
+
+            # Always use the compose file of the commit being deployed.
+            curl -fsSL -o docker-compose.yml "https://raw.githubusercontent.com/${{ github.repository }}/$COMMIT_SHA/openmap/docker-compose.yml"
+
+            echo ${{ secrets.GHCR_PAT }} | docker login ${{ env.REGISTRY }} -u ${{ secrets.GHCR_USER || 'paumas' }} --password-stdin
+
+            docker compose pull
+            # Recreates the container only when the image changed.
+            docker compose up -d
+            docker image prune -f
+            docker compose ps

@@ -38,14 +38,23 @@ openmap.lt atidaro redaktorių adresu
 - Jei stiliaus nepavyksta užkrauti, „Išsaugoti“ išjungtas, kad tuščias stilius
   neperrašytų profilio.
 
-## Paleidimas (Docker)
+## Paleidimas (Docker) ir automatinis diegimas
 
-Vaizdą `ghcr.io/openmaplt/maputnik` surenka `.github/workflows/openmap-image.yml`
-(kiekvienas push į `main`). Serveryje:
+Kiekvienas push į `main` paleidžia `.github/workflows/openmap-image.yml`: jis
+surenka vaizdą `ghcr.io/openmaplt/maputnik`, per SSH nukopijuoja
+`openmap/docker-compose.yml` į serverį (`/opt/openmap-editor`), padaro
+`docker compose pull` ir `up -d`. Jungtis į serverį nereikia.
 
-    docker login ghcr.io        # vieną kartą; tokenas su read:packages
-    docker compose -f openmap/docker-compose.yml pull
-    docker compose -f openmap/docker-compose.yml up -d
+Šio fork'o GitHub Secrets (tokie patys kaip openmap.lt repo): `SSH_HOST`,
+`SSH_USERNAME`, `SSH_PRIVATE_KEY`, `GHCR_PAT`; neprivalomi: `SSH_PORT`,
+`GHCR_USER` (numatytasis `paumas`), `EDITOR_DEPLOY_PATH`, `EDITOR_PORT`.
+SSH vartotojas serveryje turi galėti naudoti docker.
+
+Ranka: `docker compose -f openmap/docker-compose.yml pull && docker compose -f openmap/docker-compose.yml up -d`.
+
+nginx konfigūracija konteinerio viduje (`openmap/nginx.conf`) yra reikalinga: tai
+statinio puslapio serveris, panašiai kaip Next.js serveris openmap.lt konteineryje.
+Serverio nginx daro tik TLS ir `proxy_pass`.
 
 Prievadas `127.0.0.1:3001` (keičiamas `EDITOR_PORT`). Serverio nginx
 nukreipia domeną į jį:

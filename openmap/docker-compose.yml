@@ -1,6 +1,9 @@
-# Runs the openmap.lt editor image built by .github/workflows/openmap-image.yml.
+# The openmap.lt editor image built by .github/workflows/openmap-image.yml.
+# The workflow copies this file to the server and runs `docker compose pull`
+# and `up -d` after every push to main, so nobody has to log in to redeploy.
+# To run it by hand:
 #
-#   docker login ghcr.io          # once, with a token that can read the package
+#   docker login ghcr.io          # with a token that can read the package
 #   docker compose -f openmap/docker-compose.yml pull
 #   docker compose -f openmap/docker-compose.yml up -d
 #
@@ -8,7 +11,7 @@
 # editor.openmap.lt to it (see openmap/README.md).
 services:
   editor:
-    image: ghcr.io/openmaplt/maputnik:${EDITOR_IMAGE_TAG:-latest}
+    image: ${EDITOR_IMAGE:-ghcr.io/openmaplt/maputnik:latest}
     container_name: openmap-editor
     restart: unless-stopped
     ports:
