@@ -193,7 +193,7 @@ export function describeFailure(
   if (body?.error === "forbidden_url") {
     return {
       kind: "rejected",
-      message: `Stilius naudoja neleidžiamą adresą${body.detail ? ` (${body.detail})` : ""}. Leidžiami tik openmap.lt adresai.`,
+      message: `Stilius naudoja neleidžiamą adresą${body.detail ? ` (${body.detail})` : ""}. Leidžiami tik https adresai.`,
     };
   }
   if (body?.error === "invalid_style") {

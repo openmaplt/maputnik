@@ -15,10 +15,14 @@ Visi pakeitimai nedideli, kad būtų lengva sinchronizuotis su upstream:
   `_toolbar.scss` – įjungia tai redaktoriuje: „← openmap.lt“ nuoroda,
   „Išsaugoti“ mygtukas (arba Ctrl/Cmd+S), neišsaugotų pakeitimų indikatorius ir
   įspėjimas paliekant puslapį.
-- `ModalSources.tsx`, `src/config/openmap-tilesets.json` – „Data Sources“ siūlo tik
-  openmap.lt duomenų rinkinius; laisvos formos „Add New Source“ išjungta
-  (įjungiama build kintamuoju `VITE_OPENMAP_SOURCES=true`, kurį nustato
-  `openmap/Dockerfile`; be jo redaktorius veikia kaip upstream).
+- `ModalSources.tsx`, `src/config/openmap-tilesets.json` – „Data Sources“ sąrašo
+  viršuje rodo openmap.lt duomenų rinkinius, o po jų – nepakeistą upstream sąrašą
+  (build kintamasis `VITE_OPENMAP_SOURCES=true`, nustatomas `openmap/Dockerfile`; be
+  jo redaktorius veikia kaip upstream). Laisvos formos „Add New Source“ taip pat
+  lieka: openmap.lt priima bet kurį `https` šaltinį, o jei serveris neleidžia CORS,
+  sluoksnis tiesiog neužsikraus.
+- `AppToolbar.tsx`, `ModalExport.tsx` – openmap režime upstream „Save“ (kuris tik
+  atsisiunčia failą) vadinasi „Atsisiųsti“, o „Open“ – „Įkelti“.
 - `vite.config.ts` – `MAPUTNIK_INSTRUMENT=false` išjungia padengimo
   instrumentaciją gamybiniame bundle.
 
@@ -35,7 +39,7 @@ openmap.lt atidaro redaktorių adresu
 - Po užkrovimo `style`, `token`, `return` pašalinami iš adreso juostos;
   sesija laikoma `sessionStorage` (perkrovus kortelę veikia, kol raktas galioja).
 - Redaktorius niekada nesaugo automatiškai: įrašoma tik paspaudus „Išsaugoti“.
-  Serveris patikrina stilių (≤ 1 MB, version 8, tik openmap.lt adresai).
+  Serveris patikrina stilių (≤ 1 MB, version 8, visi adresai tik `https`).
 - Jei stiliaus nepavyksta užkrauti, „Išsaugoti“ išjungtas, kad tuščias stilius
   neperrašytų profilio.
 
