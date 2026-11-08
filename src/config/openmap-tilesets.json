@@ -19,6 +19,11 @@
     "url": "https://tiles.openmap.lt/capabilities/admin.json",
     "title": "openmap.lt: administracinės ribos"
   },
+  "contour": {
+    "type": "vector",
+    "url": "https://tiles.openmap.lt/capabilities/contour.json",
+    "title": "openmap.lt: izolinijos"
+  },
   "bicycle": {
     "type": "vector",
     "url": "https://openmap.lt/capabilities/bicycle.json",
