@@ -14,6 +14,11 @@
     "url": "https://tiles.openmap.lt/capabilities/detail.json",
     "title": "openmap.lt: detalės"
   },
+  "admin": {
+    "type": "vector",
+    "tiles": ["https://tiles.openmap.lt/maps/admin/{z}/{x}/{y}.pbf"],
+    "title": "openmap.lt: administracinės ribos"
+  },
   "bicycle": {
     "type": "vector",
     "url": "https://openmap.lt/capabilities/bicycle.json",
