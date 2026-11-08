@@ -80,6 +80,7 @@ type ToolbarActionProps = {
   children?: React.ReactNode
   onClick?(...args: unknown[]): unknown
   wdKey?: string
+  title?: string
 };
 
 class ToolbarAction extends React.Component<ToolbarActionProps> {
@@ -88,6 +89,7 @@ class ToolbarAction extends React.Component<ToolbarActionProps> {
       className='maputnik-toolbar-action'
       data-wd-key={this.props.wdKey}
       onClick={this.props.onClick}
+      title={this.props.title}
     >
       {this.props.children}
     </button>;
@@ -256,13 +258,21 @@ class AppToolbarInternal extends React.Component<AppToolbarInternalProps> {
                   : openmap.status === "saved" ? "Išsaugota" : ""}
             </span>
           </>}
-          <ToolbarAction wdKey="nav:open" onClick={() => this.props.onToggleModal("open")}>
+          <ToolbarAction
+            wdKey="nav:open"
+            onClick={() => this.props.onToggleModal("open")}
+            title={openmap ? "Pakeisti dabartinį stilių failu ar adresu (openmap.lt išsaugoma tik paspaudus „Išsaugoti“)" : undefined}
+          >
             <MdOpenInBrowser />
-            <IconText>{t("Open")}</IconText>
+            <IconText>{openmap ? "Įkelti" : t("Open")}</IconText>
           </ToolbarAction>
-          <ToolbarAction wdKey="nav:export" onClick={() => this.props.onToggleModal("export")}>
+          <ToolbarAction
+            wdKey="nav:export"
+            onClick={() => this.props.onToggleModal("export")}
+            title={openmap ? "Atsisiųsti stiliaus failą į savo kompiuterį (neįrašo į openmap.lt)" : undefined}
+          >
             <MdSave />
-            <IconText>{t("Save")}</IconText>
+            <IconText>{openmap ? "Atsisiųsti" : t("Save")}</IconText>
           </ToolbarAction>
           <ToolbarAction wdKey="nav:code-editor" onClick={() => this.props.onToggleModal("codeEditor")}>
             <MdCode />

@@ -1040,6 +1040,7 @@ export class App extends React.Component<any, AppState> {
         onOpenToggle={() => this.toggleModal("export")}
         fileHandle={this.state.fileHandle}
         onSetFileHandle={this.onSetFileHandle}
+        downloadOnly={!!this.state.openmap}
       />
       <ModalOpen
         isOpen={this.state.isOpen.open}
