@@ -25,6 +25,9 @@ type ModalExportInternalProps = {
   onOpenToggle(): void
   onSetFileHandle(fileHandle: FileSystemFileHandle | null): unknown
   fileHandle: FileSystemFileHandle | null
+  // openmap.lt build: this dialog only downloads a file, saving to openmap.lt is
+  // the toolbar's own button.
+  downloadOnly?: boolean
 } & WithTranslation;
 
 
@@ -157,12 +160,12 @@ class ModalExportInternal extends React.Component<ModalExportInternalProps> {
       data-wd-key="modal:export"
       isOpen={this.props.isOpen}
       onOpenToggle={this.props.onOpenToggle}
-      title={t("Save Style")}
+      title={this.props.downloadOnly ? "Atsisiųsti stilių" : t("Save Style")}
       className="maputnik-export-modal"
     >
 
       <section className="maputnik-modal-section">
-        <h1>{t("Save Style")}</h1>
+        <h1>{this.props.downloadOnly ? "Atsisiųsti stilių" : t("Save Style")}</h1>
         <p>
           {t("Save the JSON style to your computer.")}
         </p>
