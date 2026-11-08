@@ -350,9 +350,11 @@ export class App extends React.Component<any, AppState> {
   async componentDidMount() {
     this.styleStore = await createStyleStore(
       (mapStyle, opts) => this.onStyleChanged(mapStyle, opts),
-      ({ session, loadError }) => this.setState({
+      ({ session, loadError, view }) => this.setState((state) => ({
         openmap: { session, loadError, status: "idle", error: null, dirty: false },
-      }),
+        // `_from: "app"` makes the map jump there once the style is applied.
+        mapView: view ? { ...view, _from: "app" } : state.mapView,
+      })),
     );
     window.addEventListener("keydown", this.handleKeyPress);
     window.addEventListener("beforeunload", this.handleBeforeUnload);
