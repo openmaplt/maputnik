@@ -17,11 +17,11 @@ import openmapSources from "../../config/openmap-tilesets.json";
 import { type OnStyleChangedCallback, type StyleSpecificationWithId } from "../../libs/definitions";
 
 
-// openmap.lt build (VITE_OPENMAP_SOURCES=true, set in openmap/Dockerfile): users
-// pick only from src/config/openmap-tilesets.json, because a style may only use
-// openmap.lt addresses (the server refuses anything else), so upstream's
-// free-form "Add New Source" form would only lead to rejected saves. Without the
-// flag the editor behaves exactly like upstream.
+// openmap.lt build (VITE_OPENMAP_SOURCES=true, set in openmap/Dockerfile): the
+// quick-pick list is openmap.lt's own tile sets (src/config/openmap-tilesets.json)
+// instead of upstream's third-party list (most of which need API keys). The
+// free-form "Add New Source" form stays: openmap.lt accepts any https source.
+// Without the flag the editor behaves exactly like upstream.
 const openmapOnly = import.meta.env.VITE_OPENMAP_SOURCES === "true";
 const publicSources: Record<string, unknown> = openmapOnly ? openmapSources : upstreamSources;
 
@@ -340,14 +340,14 @@ class ModalSourcesInternal extends React.Component<ModalSourcesInternalProps> {
         </div>
       </section>
 
-      {!openmapOnly && <section className="maputnik-modal-section">
+      <section className="maputnik-modal-section">
         <h1>{t("Add New Source")}</h1>
         <p>{t("Add a new source to your style. You can only choose the source type and id at creation time!")}</p>
         <AddSource
           onAdd={(sourceId: string, source: SourceSpecification) => this.props.onStyleChanged(addSource(mapStyle, sourceId, source))}
           {...i18nProps}
         />
-      </section>}
+      </section>
     </Modal>;
   }
 }
