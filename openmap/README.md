@@ -56,7 +56,7 @@ nginx konfigūracija konteinerio viduje (`openmap/nginx.conf`) yra reikalinga: t
 statinio puslapio serveris, panašiai kaip Next.js serveris openmap.lt konteineryje.
 Serverio nginx daro tik TLS ir `proxy_pass`.
 
-Prievadas `127.0.0.1:3001` (keičiamas `EDITOR_PORT`). Serverio nginx
+Prievadas `127.0.0.1:3002` (keičiamas `EDITOR_PORT`). Serverio nginx
 nukreipia domeną į jį:
 
     server {
@@ -65,7 +65,7 @@ nukreipia domeną į jį:
         # ssl_certificate ...;
 
         location / {
-            proxy_pass http://127.0.0.1:3001;
+            proxy_pass http://127.0.0.1:3002;
             proxy_set_header Host $host;
         }
     }

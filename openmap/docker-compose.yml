@@ -15,4 +15,4 @@ services:
     container_name: openmap-editor
     restart: unless-stopped
     ports:
-      - "127.0.0.1:${EDITOR_PORT:-3001}:80"
+      - "127.0.0.1:${EDITOR_PORT:-3002}:80"
