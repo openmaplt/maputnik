@@ -1,6 +1,8 @@
 import { ensureStyleValidity } from "../style";
 import {loadStyleUrl} from "../urlopen";
 import publicSources from "../../config/styles.json";
+import openmapDefaultStyle from "../../config/openmap-default-style.json";
+import type {StyleSpecification} from "maplibre-gl";
 import type {IStyleStore, StyleSpecificationWithId} from "../definitions";
 
 const storagePrefix = "maputnik";
@@ -13,7 +15,13 @@ const storageKeys = {
 const defaultStyleUrl = publicSources[0].url;
 
 // Fetch a default style via URL and return it or a fallback style via callback
+// The openmap.lt build (VITE_OPENMAP_SOURCES=true) starts from its own style:
+// no layers yet, with openmap.lt's general tile set as the active source and
+// openmap.lt's sprite and fonts, instead of upstream's third-party default.
 export function loadDefaultStyle(): Promise<StyleSpecificationWithId> {
+  if (import.meta.env.VITE_OPENMAP_SOURCES === "true") {
+    return Promise.resolve(ensureStyleValidity(structuredClone(openmapDefaultStyle) as unknown as StyleSpecification));
+  }
   return loadStyleUrl(defaultStyleUrl);
 }
 

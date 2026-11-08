@@ -21,6 +21,10 @@ Visi pakeitimai nedideli, kad būtų lengva sinchronizuotis su upstream:
   jo redaktorius veikia kaip upstream). Laisvos formos „Add New Source“ taip pat
   lieka: openmap.lt priima bet kurį `https` šaltinį, o jei serveris neleidžia CORS,
   sluoksnis tiesiog neužsikraus.
+- `stylestore.ts`, `src/config/openmap-default-style.json` – kai redaktorius
+  atidaromas tiesiai (ne iš openmap.lt) ir nėra išsaugoto stiliaus, pradedama nuo
+  tuščio stiliaus, kurio aktyvus šaltinis yra „openmap.lt: bendras“ (su openmap.lt
+  šriftais ir ikonomis), o ne upstream numatytojo stiliaus iš jsDelivr.
 - `AppToolbar.tsx`, `ModalExport.tsx` – openmap režime upstream „Save“ (kuris tik
   atsisiunčia failą) vadinasi „Atsisiųsti“, o „Open“ – „Įkelti“.
 - `vite.config.ts` – `MAPUTNIK_INSTRUMENT=false` išjungia padengimo
