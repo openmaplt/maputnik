@@ -110,13 +110,35 @@ function storeSession(storage: Pick<Storage, "setItem">, session: OpenmapSession
   }
 }
 
+// Maputnik opens on the whole world, where Lithuania is a dot and the map looks
+// empty. A fresh start from openmap.lt therefore begins over Lithuania, unless
+// the profile's style carries its own camera.
+export type OpenmapMapView = { zoom: number, center: { lng: number, lat: number } };
+
+export const LITHUANIA_VIEW: OpenmapMapView = { zoom: 7, center: { lng: 23.9, lat: 55.3 } };
+
+export function initialMapView(style: Pick<StyleSpecification, "center" | "zoom">): OpenmapMapView {
+  const { center, zoom } = style;
+  if (Array.isArray(center) && center.length === 2 && typeof zoom === "number") {
+    return { zoom, center: { lng: center[0], lat: center[1] } };
+  }
+  return LITHUANIA_VIEW;
+}
+
+export type OpenmapStart = {
+  session: OpenmapSession
+  // True when the editor was just opened from openmap.lt (the URL carried the
+  // token), false when a reloaded tab resumes its session and keeps its own view.
+  fresh: boolean
+};
+
 // Called once at startup. A URL from openmap.lt starts a session: it is kept in
 // sessionStorage (so a reload of the tab still works until the token expires)
 // and `token`, `return` and `style` are removed from the address bar so the
 // token does not linger in history. With no `style` in the URL a stored session
 // from this tab is resumed. A plain `?style=` URL (no token) is left to the
 // regular Maputnik flow.
-export function startOpenmapSession(): OpenmapSession | null {
+export function startOpenmapSession(): OpenmapStart | null {
   const allowLocal = import.meta.env.DEV;
   const url = new URL(window.location.href);
   const fromUrl = sessionFromUrl(url, allowLocal);
@@ -126,10 +148,11 @@ export function startOpenmapSession(): OpenmapSession | null {
       url.searchParams.delete(name);
     }
     window.history.replaceState({}, document.title, url.toString());
-    return fromUrl;
+    return { session: fromUrl, fresh: true };
   }
   if (!url.searchParams.get("style")) {
-    return readStoredSession(window.sessionStorage, allowLocal);
+    const stored = readStoredSession(window.sessionStorage, allowLocal);
+    return stored ? { session: stored, fresh: false } : null;
   }
   return null;
 }

@@ -2,7 +2,7 @@
 import { type IStyleStore, type OnStyleChangedCallback } from "../definitions";
 import { getStyleUrlFromAddressbarAndRemoveItIfNeeded, loadStyleUrl } from "../urlopen";
 import { emptyStyle } from "../style";
-import { loadOpenmapStyle, OpenmapLoadError, startOpenmapSession, type OpenmapFailure, type OpenmapSession } from "../openmap";
+import { initialMapView, loadOpenmapStyle, OpenmapLoadError, startOpenmapSession, type OpenmapFailure, type OpenmapMapView, type OpenmapSession } from "../openmap";
 import { ApiStyleStore } from "./apistore";
 import { StyleStore } from "./stylestore";
 
@@ -11,6 +11,8 @@ export type OpenmapStartInfo = {
   session: OpenmapSession
   // Set when the profile's style could not be read; saving is then disabled.
   loadError: OpenmapFailure | null
+  // Where to put the map on a fresh start; null keeps the map where it is.
+  view: OpenmapMapView | null
 };
 
 export async function createStyleStore(
@@ -19,8 +21,9 @@ export async function createStyleStore(
 ): Promise<IStyleStore> {
   // Opened from openmap.lt: the profile's style from the server is the source,
   // not whatever is in local storage, and there is no "discard changes?" prompt.
-  const openmap = startOpenmapSession();
-  if (openmap) {
+  const start = startOpenmapSession();
+  if (start) {
+    const openmap = start.session;
     let loadError: OpenmapFailure | null = null;
     let style = emptyStyle;
     try {
@@ -28,8 +31,10 @@ export async function createStyleStore(
     } catch (error) {
       loadError = error instanceof OpenmapLoadError ? error.failure : { kind: "other", message: "Nepavyko užkrauti stiliaus." };
     }
-    onOpenmapStart?.({ session: openmap, loadError });
     onStyleChanged(style, {initialLoad: true, save: false});
+    // After the style: onStyleChanged writes mapView from the state it saw, so
+    // setting the camera first would be overwritten.
+    onOpenmapStart?.({ session: openmap, loadError, view: start.fresh ? initialMapView(style) : null });
     return new StyleStore();
   }
 

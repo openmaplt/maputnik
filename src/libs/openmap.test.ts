@@ -5,6 +5,8 @@ import {
   readStoredSession,
   safeReturnUrl,
   sessionFromUrl,
+  initialMapView,
+  LITHUANIA_VIEW,
 } from "./openmap";
 
 const STYLE = "https://openmap.lt/api/profile-styles/kauno-renginys";
@@ -105,5 +107,16 @@ describe("describeFailure", () => {
     expect(describeFailure(null, null).kind).toBe("network");
     expect(describeFailure(500, null, "load").message).toContain("užkrauti");
     expect(describeFailure(500, null, "save").message).toContain("išsaugoti");
+  });
+});
+
+describe("initialMapView", () => {
+  it("starts over Lithuania when the style has no camera", () => {
+    expect(initialMapView({})).toEqual(LITHUANIA_VIEW);
+    expect(initialMapView({ zoom: 5 })).toEqual(LITHUANIA_VIEW);
+  });
+
+  it("uses the style's own camera when it has one", () => {
+    expect(initialMapView({ center: [25.3, 54.7], zoom: 11 })).toEqual({ zoom: 11, center: { lng: 25.3, lat: 54.7 } });
   });
 });
