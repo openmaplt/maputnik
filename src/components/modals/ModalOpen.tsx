@@ -9,7 +9,14 @@ import { InputButton } from "../InputButton";
 import { InputUrl } from "../InputUrl";
 
 import { ensureStyleValidity } from "../../libs/style";
-import publicStyles from "../../config/styles.json";
+import upstreamStyles from "../../config/styles.json";
+import { openmapEmptyStyleUrl } from "../../libs/store/stylestore";
+
+// The openmap.lt build (VITE_OPENMAP_SOURCES=true): the gallery's first entry,
+// "Empty Style", is openmap.lt's own empty style instead of upstream's.
+const publicStyles = import.meta.env.VITE_OPENMAP_SOURCES === "true"
+  ? upstreamStyles.map((style, index) => index === 0 ? { ...style, url: openmapEmptyStyleUrl } : style)
+  : upstreamStyles;
 
 type PublicStyleProps = {
   url: string
