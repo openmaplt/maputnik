@@ -71,9 +71,6 @@ jobs:
             mkdir -p ${{ secrets.EDITOR_DEPLOY_PATH || '/opt/openmap-editor' }}
             cd ${{ secrets.EDITOR_DEPLOY_PATH || '/opt/openmap-editor' }}
 
-            echo "EDITOR_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" > .env
-            echo "EDITOR_PORT=${{ secrets.EDITOR_PORT || '3002' }}" >> .env
-
             # Always use the compose file of the commit being deployed.
             curl -fsSL -o docker-compose.yml "https://raw.githubusercontent.com/${{ github.repository }}/$COMMIT_SHA/openmap/docker-compose.yml"
 

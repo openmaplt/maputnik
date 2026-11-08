@@ -47,7 +47,7 @@ surenka vaizdą `ghcr.io/openmaplt/maputnik`, per SSH nukopijuoja
 
 Šio fork'o GitHub Secrets (tokie patys kaip openmap.lt repo): `SSH_HOST`,
 `SSH_USERNAME`, `SSH_PRIVATE_KEY`, `GHCR_PAT`; neprivalomi: `SSH_PORT`,
-`GHCR_USER` (numatytasis `paumas`), `EDITOR_DEPLOY_PATH`, `EDITOR_PORT`.
+`GHCR_USER` (numatytasis `paumas`), `EDITOR_DEPLOY_PATH`.
 SSH vartotojas serveryje turi galėti naudoti docker.
 
 Ranka: `docker compose -f openmap/docker-compose.yml pull && docker compose -f openmap/docker-compose.yml up -d`.
@@ -56,7 +56,7 @@ nginx konfigūracija konteinerio viduje (`openmap/nginx.conf`) yra reikalinga: t
 statinio puslapio serveris, panašiai kaip Next.js serveris openmap.lt konteineryje.
 Serverio nginx daro tik TLS ir `proxy_pass`.
 
-Prievadas `127.0.0.1:3002` (keičiamas `EDITOR_PORT`). Serverio nginx
+Prievadas `127.0.0.1:3002` (keičiamas `openmap/docker-compose.yml`). Serverio nginx
 nukreipia domeną į jį:
 
     server {

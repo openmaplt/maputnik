@@ -11,8 +11,8 @@
 # editor.openmap.lt to it (see openmap/README.md).
 services:
   editor:
-    image: ${EDITOR_IMAGE:-ghcr.io/openmaplt/maputnik:latest}
+    image: ghcr.io/openmaplt/maputnik:latest
     container_name: openmap-editor
     restart: unless-stopped
     ports:
-      - "127.0.0.1:${EDITOR_PORT:-3002}:80"
+      - "127.0.0.1:3002:80"
