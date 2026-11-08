@@ -1,54 +1,27 @@
 {
-  "tilezen": {
+  "openmaptiles": {
     "type": "vector",
-    "url": "https://tiles.openmap.lt/capabilities/all.json",
-    "title": "openmap.lt: bendras"
+    "url": "https://api.maptiler.com/tiles/v3-openmaptiles/tiles.json?key={key}",
+    "title": "OpenMapTiles v3"
   },
-  "topo": {
+  "thunderforest_transport": {
     "type": "vector",
-    "url": "https://tiles.openmap.lt/capabilities/topo.json",
-    "title": "openmap.lt: topografinis"
+    "url": "https://tile.thunderforest.com/thunderforest.transport-v2.json?apikey={key}",
+    "title": "Thunderforest Transport v2"
   },
-  "detail": {
+  "thunderforest_outdoors": {
     "type": "vector",
-    "url": "https://tiles.openmap.lt/capabilities/detail.json",
-    "title": "openmap.lt: detalės"
+    "url": "https://tile.thunderforest.com/thunderforest.outdoors-v2.json?apikey={key}",
+    "title": "Thunderforest Outdoors v2"
   },
-  "bicycle": {
+  "open_zoomstack": {
     "type": "vector",
-    "url": "https://openmap.lt/capabilities/bicycle.json",
-    "title": "openmap.lt: dviračių maršrutai"
+    "url": "https://s3-eu-west-1.amazonaws.com/tiles.os.uk/v2/data/vector/open-zoomstack/config.json",
+    "title": "OS Open Zoomstack v2"
   },
-  "river": {
+  "locationiq": {
     "type": "vector",
-    "url": "https://openmap.lt/capabilities/river.json",
-    "title": "openmap.lt: upės"
-  },
-  "speed": {
-    "type": "vector",
-    "url": "https://openmap.lt/capabilities/speed.json",
-    "title": "openmap.lt: greičio apribojimai"
-  },
-  "beer": {
-    "type": "vector",
-    "url": "https://openmap.lt/capabilities/craftbeer.json",
-    "title": "openmap.lt: aludariai"
-  },
-  "basins": {
-    "type": "vector",
-    "url": "https://openmap.lt/capabilities/basins.json",
-    "title": "openmap.lt: baseinai"
-  },
-  "dem": {
-    "type": "raster-dem",
-    "url": "https://openmap.lt/styles/hillshade.json",
-    "title": "openmap.lt: reljefo šešėliai"
-  },
-  "orto": {
-    "type": "raster",
-    "tiles": ["https://ort10lt.openmap.lt/g16/{z}/{x}/{y}.jpeg"],
-    "tileSize": 256,
-    "attribution": "© NŽT ORT10LT",
-    "title": "openmap.lt: ortofoto"
+    "url": "https://tiles.locationiq.com/v3/pbf/tiles.json?key={key}",
+    "title": "LocationIQ"
   }
 }

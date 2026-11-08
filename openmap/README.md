@@ -15,9 +15,10 @@ Visi pakeitimai nedideli, kad būtų lengva sinchronizuotis su upstream:
   `_toolbar.scss` – įjungia tai redaktoriuje: „← openmap.lt“ nuoroda,
   „Išsaugoti“ mygtukas (arba Ctrl/Cmd+S), neišsaugotų pakeitimų indikatorius ir
   įspėjimas paliekant puslapį.
-- `ModalSources.tsx`, `src/config/tilesets.json` – „Data Sources“ siūlo tik
+- `ModalSources.tsx`, `src/config/openmap-tilesets.json` – „Data Sources“ siūlo tik
   openmap.lt duomenų rinkinius; laisvos formos „Add New Source“ išjungta
-  (grąžinama su `VITE_ALLOW_CUSTOM_SOURCES=true`).
+  (įjungiama build kintamuoju `VITE_OPENMAP_SOURCES=true`, kurį nustato
+  `openmap/Dockerfile`; be jo redaktorius veikia kaip upstream).
 - `vite.config.ts` – `MAPUTNIK_INSTRUMENT=false` išjungia padengimo
   instrumentaciją gamybiniame bundle.
 

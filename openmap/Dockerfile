@@ -23,6 +23,8 @@ COPY . .
 #  - MAPUTNIK_INSTRUMENT=false: no coverage instrumentation in the bundle.
 # Source maps (30+ MB) are dropped from the image.
 ENV MAPUTNIK_INSTRUMENT=false
+# Only openmap.lt tile sets in "Data Sources" (see ModalSources.tsx).
+ENV VITE_OPENMAP_SOURCES=true
 RUN npx tsc \
  && npx vite build --mode=production --base=/ \
  && find dist -name '*.map' -delete
