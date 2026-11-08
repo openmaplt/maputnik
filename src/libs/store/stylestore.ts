@@ -1,6 +1,9 @@
 import { ensureStyleValidity } from "../style";
 import {loadStyleUrl} from "../urlopen";
 import publicSources from "../../config/styles.json";
+// `?url`: the file is emitted as a hashed asset by Vite (not from public/, which
+// .dockerignore excludes from the image build).
+import openmapEmptyStyleUrl from "../../config/openmap-empty-style.json?url";
 import type {IStyleStore, StyleSpecificationWithId} from "../definitions";
 
 const storagePrefix = "maputnik";
@@ -11,10 +14,10 @@ const storageKeys = {
 };
 
 // The openmap.lt build (VITE_OPENMAP_SOURCES=true) starts from its own empty
-// style, public/openmap-empty-style.json (no layers, openmap.lt's general tile
+// style, src/config/openmap-empty-style.json (no layers, openmap.lt's general tile
 // set as the active source, openmap.lt's sprite and fonts). The same file is the
 // first entry of the style gallery (ModalOpen.tsx).
-export const openmapEmptyStyleUrl = `${import.meta.env.BASE_URL}openmap-empty-style.json`;
+export { openmapEmptyStyleUrl };
 const defaultStyleUrl = import.meta.env.VITE_OPENMAP_SOURCES === "true" ? openmapEmptyStyleUrl : publicSources[0].url;
 
 // Fetch a default style via URL and return it or a fallback style via callback

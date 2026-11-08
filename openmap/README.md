@@ -21,7 +21,7 @@ Visi pakeitimai nedideli, kad būtų lengva sinchronizuotis su upstream:
   jo redaktorius veikia kaip upstream). Laisvos formos „Add New Source“ taip pat
   lieka: openmap.lt priima bet kurį `https` šaltinį, o jei serveris neleidžia CORS,
   sluoksnis tiesiog neužsikraus.
-- `public/openmap-empty-style.json`, `stylestore.ts`, `ModalOpen.tsx` – openmap
+- `src/config/openmap-empty-style.json`, `stylestore.ts`, `ModalOpen.tsx` – openmap
   „Empty Style“: tuščias stilius, kurio aktyvus šaltinis yra „openmap.lt: bendras“
   (su openmap.lt šriftais ir ikonomis). Jis pradedamas, kai redaktorius atidaromas
   tiesiai (ne iš openmap.lt) ir nėra išsaugoto stiliaus, ir jis pat yra pirmas
